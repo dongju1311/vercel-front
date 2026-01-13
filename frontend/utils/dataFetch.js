@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/authStore.js";
  * @type {axios.AxiosInstance}
  */
 const api = axios.create({
-    baseURL: "http://54.180.89.176:9000",
+    baseURL: "/api",
     withCredentials: true,
 });
 

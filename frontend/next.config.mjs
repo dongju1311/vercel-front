@@ -1,17 +1,15 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-  output : "standalone",
   /* config options here */
   reactCompiler: true,
-    output: "standalone"
-    // async rewrites() {
-    //   return[
-    //       {
-    //           source: '/:path*',
-    //           destination: 'http://3.35.3.78:9000/:path*',
-    //       },
-    //   ];
-    // },
+    output: "standalone",
+    async rewrites() {
+      return[
+          {
+              source: '/api/:path*',
+              destination: 'http://54.180.89.176:9000/api/:path*',
+          },
+      ];
+    },
 };
 
 export default nextConfig;
