@@ -24,6 +24,7 @@ export function SocialLogin(){
             urldata='http://54.180.89.176:3000/auth';
         }
         else{
+//             urldata='http://'+hostName+':3000/auth';
             urldata='http://'+hostName+':3000/auth';
         }
         // 플랫폼별 oauth 요청 URL
