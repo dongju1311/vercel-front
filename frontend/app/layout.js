@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
       >
       <AppShell>{children}</AppShell>
         <Script
-            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ba6d5501eeb4a5d8098250cf5972fc00&autoload=false"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=13052c0aa951d8be4109ba36bf555930&autoload=false"
             strategy="beforeInteractive" // 페이지 렌더 전에 로드
         />
       </body>
