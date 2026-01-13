@@ -163,9 +163,10 @@ export const fetchData = async(url) => {
 
 export const axiosGet = async (url) => {
     try{
-        const reqUrl = `${url}`;
+//        const reqUrl = `${url}`;
         // const reqUrl = `${url}`;
-        const response = await api.get(reqUrl);
+        const response = await api.get(url);
+        console.log("test" + response);
         return response?.data;
     }catch(error) {
         console.log("🎯 에러발생, 페이지 이동합니다!!");
