@@ -6,6 +6,7 @@ import {refreshCsrfToken} from "@/utils/csrf/manageCsrfToken";
 import Swal from "sweetalert2";
 import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/authStore";
+import api from "@/lib/api";
 
 
 export function SocialAuth(){
