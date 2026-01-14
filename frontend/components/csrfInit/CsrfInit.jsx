@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import api from "@/utils/dataFetch.js";
+import { api } from "@/utils/dataFetch.js";
 
 export default function CsrfInit() {
   useEffect(() => {
