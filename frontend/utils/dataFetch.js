@@ -7,6 +7,8 @@ import { useAuthStore } from "@/store/authStore.js";
  */
 const api = axios.create({
     baseURL: "https://teamproject-bicycleapp.duckdns.org/api",
+     xsrfCookieName: "XSRF-TOKEN",
+     xsrfHeaderName: "X-XSRF-TOKEN",
     withCredentials: true,
 });
 
@@ -163,9 +165,8 @@ export const fetchData = async(url) => {
 
 export const axiosGet = async (url) => {
     try{
-//        const reqUrl = `${url}`;
-        // const reqUrl = `${url}`;
-        const response = await api.get(url);
+        const reqUrl = `${url}`;
+        const response = await api.get(reqUrl);
         console.log("test" + response);
         return response?.data;
     }catch(error) {
