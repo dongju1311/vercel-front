@@ -11,7 +11,7 @@ export function RentalInfo({ data }) {
 
     /** 장바구니 접근 시 로그인 필요 */
     const handleRentalClick = (e) => {
-    if (!userId || userId.trim() === "") {
+    if (!userId || userId.trim() === "") { 
         e.preventDefault();
 
         Swal.fire({
