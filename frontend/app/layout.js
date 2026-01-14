@@ -15,7 +15,7 @@ import '@/styles/travel.css';
 import '@/styles/rental.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "@/styles/travel.css";
-import "@/components/csrfInit/CsrfInit.jsx"
+import  CsrfInit from "@/components/csrfInit/CsrfInit.jsx"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
