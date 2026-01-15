@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Swal from "sweetalert2";
 import {useAuthStore} from "@/store/authStore";
-import {refreshCsrfToken} from "@/utils/csrf/manageCsrfToken";
+import {refreshCsrfToken} from "@/utils/manageCsrfToken";
 import {getLogout} from "@/utils/auth/authAPI";
 import {useRouter} from "next/navigation";
 
