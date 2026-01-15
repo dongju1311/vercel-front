@@ -52,64 +52,68 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // CORS 설정 (모든 IP 허용)
-            .cors(cors -> cors.configurationSource(request -> {
-                CorsConfiguration config = new CorsConfiguration();
+                // CORS 설정 (모든 IP 허용)
+//            .cors(cors -> cors.configurationSource(request -> {
+//                CorsConfiguration config = new CorsConfiguration();
+//
+//                config.setAllowCredentials(true);    // 쿠키 허용
+//                config.addAllowedOriginPattern("*"); // 모든 IP Origin 허용
+//                config.addAllowedHeader("*");
+//                config.addAllowedMethod("*");
+//
+//                return config;
+//            }
+//
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                config.setAllowCredentials(true);    // 쿠키 허용
-                config.addAllowedOriginPattern("*"); // 모든 IP Origin 허용
-                config.addAllowedHeader("*");
-                config.addAllowedMethod("*");
 
-                return config;
-            }))
+                // CSRF 설정 (기존 유지)
+//            .csrf(csrf -> csrf
+//                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                .ignoringRequestMatchers("/api/**","/auth/logout", "/cart/**", "/api/chatbot", "/auth/me", "/kakaopay/success", "/kakaopay/cancel", "/kakaopay/fail", "/travel/**")  // 그대로 유지
+//                .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+//            ).
+                .csrf(csrf->csrf.disable())//임시로 무력화
+                .authenticationProvider(authenticationProvider())//중간자 겸 공급자?
+                .securityContext(sc -> sc.requireExplicitSave(true)) // ← 선택. true면 아래 로그인 컨트롤러에서 save 필요
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+                .httpBasic(basic -> basic.disable())
+                .formLogin(form -> form.disable())
+                .requestCache(rc -> rc.disable()) //로그인 후 리다이렉트 방지
+                //                .securityContext(sc -> sc.requireExplicitSave(true)) //인증정보 세션 자동저장 방지
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.POST, "/rental/payment", "/kakaopay/ready").permitAll()
+                        // 보호된 게시판 API (로그인 필요)
+                        .requestMatchers(
+                                "/auth/info",
+                                "/api/board/write",
+                                "/api/board/update/**",
+                                "/api/board/delete/**"
+                        ).authenticated()
+                        // 공개 API (읽기 전용)
+                        .requestMatchers(
+                                "/member/**", "/products/**", "/auth/**", "/cart/**",
+                                "/support/**", "/map/**", "/travel/**", "/csrf/**",
+                                "/uploads/**",
+                                "/api/chatbot", "/api/upload",
+                                "/rental/**", "/kakaopay/success", "/kakaopay/cancel", "/kakaopay/fail",
+                                "/api/board/me"
+                        ).permitAll()
 
-            // CSRF 설정 (기존 유지)
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers("/auth/logout", "/cart/**", "/api/chatbot", "/auth/me", "/kakaopay/success", "/kakaopay/cancel", "/kakaopay/fail", "/travel/**")  // 그대로 유지
-                .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
-            )
-            .authenticationProvider(authenticationProvider())//중간자 겸 공급자?
-            .securityContext(sc -> sc.requireExplicitSave(true)) // ← 선택. true면 아래 로그인 컨트롤러에서 save 필요
-            .sessionManagement((session) -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            )
-            .httpBasic(basic -> basic.disable())
-            .formLogin(form -> form.disable())
-            .requestCache(rc -> rc.disable()) //로그인 후 리다이렉트 방지
-            //                .securityContext(sc -> sc.requireExplicitSave(true)) //인증정보 세션 자동저장 방지
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/rental/payment", "/kakaopay/ready").permitAll()
-                // 보호된 게시판 API (로그인 필요)
-                .requestMatchers(
-                        "/auth/info",
-                        "/api/board/write",
-                        "/api/board/update/**",
-                        "/api/board/delete/**"
-                ).authenticated()
-                // 공개 API (읽기 전용)
-                .requestMatchers(
-                    "/member/**", "/products/**", "/auth/**", "/cart/**",
-                    "/support/**", "/map/**", "/travel/**", "/csrf/**",
-                    "/uploads/**",
-                    "/api/chatbot", "/api/upload",
-                    "/rental/**", "/kakaopay/success", "/kakaopay/cancel", "/kakaopay/fail",
-                    "/api/board/me"
-                ).permitAll()
+                        // 게시판 조회(READ)만 허용 (GET)
+                        .requestMatchers(
+                                "/api/board/news",
+                                "/api/board/event",
+                                "/api/board/review",
+                                "/api/board/detail/**"
+                        ).permitAll()
 
-                // 게시판 조회(READ)만 허용 (GET)
-                .requestMatchers(
-                    "/api/board/news",
-                    "/api/board/event",
-                    "/api/board/review",
-                    "/api/board/detail/**"
-                ).permitAll()
-
-                // 그 외 요청
-                .anyRequest().permitAll()
-            );
+                        // 그 외 요청
+                        .anyRequest().permitAll()
+                );
 
         return http.build();
 
@@ -151,7 +155,8 @@ public class SecurityConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://teamproject-bicycleapp.duckdns.org", "http://172.16.250.148:3000", "https://teamproject-next-frontend.vercel.app"));
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://54.180.89.176:3000", "http://172.16.250.148:3000", "https://teamproject-next-frontend.vercel.app","http://54.180.155.93"));
+        configuration.setAllowedOrigins(Arrays.asList("https://teamproject-next-frontend.vercel.app","http://localhost:3000","http://54.180.89.176:3000", "http://172.16.250.148:3000", "http://54.180.155.93"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // ✅ 추가
         configuration.setAllowedHeaders(Arrays.asList("*")); // ✅ 모든 헤더 허용
         configuration.setExposedHeaders(Arrays.asList("*"));
