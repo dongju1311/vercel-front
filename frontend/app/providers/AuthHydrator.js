@@ -14,7 +14,8 @@ export default function AuthHydrator() {
             try {
                 // refresh 쿠키 기반으로 서버가 Access 재발급/검증
                 const data = await axiosGet("/auth/me");
-                console.log(data);
+
+                console.log("data ::", data);
                 if (data?.authenticated) {
                     console.log("🔄 Hydrator: 새로고침 → Access Token 재발급됨", data.accessToken);
                     login({

@@ -10,16 +10,6 @@ export const api = axios.create({
     withCredentials: true,
 });
 
-// useEffect(() => {
-//    api.get("/csrf")
-//      .then(() => {
-//        console.log("🟢 CSRF 토큰 발급 완료");
-//      })
-//      .catch(err => {
-//        console.error("🔴 CSRF 발급 실패", err);
-//      });
-//  }, []);
-
 /**
  * 제목 : 요청(Request) 인터셉터
  * 브라우저(클라이언트)에서 '요청주소(ex. /product/all)'로 실제 요청을 보내기 직전에 실행된다.
