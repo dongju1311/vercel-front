@@ -28,7 +28,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-    title: "Bicycle App",
+    title: "Bicycle-App",
     description: "Next.js Migration",
 };
 
